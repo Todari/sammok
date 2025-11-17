@@ -1,0 +1,13 @@
+node_modules/
+.npm-cache/
+.npm-cache-local/
+.cursor/
+dist/
+coverage/
+*.log
+*.lock
+.DS_Store
+web/.vite/
+web/playwright-report/
+web/test-results/
+
