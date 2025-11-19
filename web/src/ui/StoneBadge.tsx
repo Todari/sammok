@@ -29,6 +29,11 @@ const STONE_INFO: Record<
     description: '배치 즉시 8방향에 피해 1',
     accent: 'bg-emerald-500',
   },
+  Diagonal: {
+    label: 'Diagonal',
+    description: '배치 즉시 대각선 4칸에 피해 1',
+    accent: 'bg-purple-500',
+  },
   Kamikaze: {
     label: 'Kamikaze',
     description: 'HP가 1이 되는 순간 적 HP -1',

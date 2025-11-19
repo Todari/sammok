@@ -16,7 +16,6 @@ import type {
   StoneType,
 } from './types';
 
-const BOARD_SIZE = 5;
 const LOG_LIMIT = 120;
 
 const directions = [
@@ -33,12 +32,16 @@ const crossOffsets = [
   { dx: 0, dy: -1 },
 ];
 
-const mooreOffsets = [
-  ...crossOffsets,
+const diagonalOffsets = [
   { dx: 1, dy: 1 },
   { dx: 1, dy: -1 },
   { dx: -1, dy: 1 },
   { dx: -1, dy: -1 },
+];
+
+const mooreOffsets = [
+  ...crossOffsets,
+  ...diagonalOffsets,
 ];
 
 type MutableGame = Draft<GameState>;
@@ -84,6 +87,7 @@ function mergeConfig(overrides?: Partial<GameConfig>): GameConfig {
     ...overrides,
     initialBag: overrides.initialBag ?? DEFAULT_CONFIG.initialBag,
     damage: overrides.damage ?? DEFAULT_CONFIG.damage,
+    stoneStats: overrides.stoneStats ?? DEFAULT_CONFIG.stoneStats,
   };
 }
 
@@ -113,6 +117,7 @@ function createPlayerBag(
     Tough: 0,
     Cross: 0,
     AoE: 0,
+    Diagonal: 0,
     Kamikaze: 0,
   };
   STONE_TYPES.forEach((type) => {
@@ -223,7 +228,7 @@ export function placeStone(
 
     draft.phase = 'Resolving';
 
-    const stats = getStoneStats(stoneType);
+    const stats = getStoneStats(stoneType, draft.config);
     const stone: StoneInstance = {
       id: `stone-${draft.sequence + 1}`,
       owner: playerId,
@@ -255,6 +260,15 @@ export function placeStone(
         x,
         y,
         mooreOffsets,
+        pendingDamage,
+        playerId,
+      );
+    } else if (stats.onPlace === 'Diagonal') {
+      applyOnPlaceDamage(
+        draft,
+        x,
+        y,
+        diagonalOffsets,
         pendingDamage,
         playerId,
       );
@@ -291,10 +305,11 @@ function applyOnPlaceDamage(
   pendingDamage: PendingDamage,
   source: PlayerId,
 ) {
+  const boardSize = draft.config.boardSize;
   offsets.forEach(({ dx, dy }) => {
     const nx = x + dx;
     const ny = y + dy;
-    if (!inBounds(nx, ny)) return;
+    if (!inBounds(nx, ny, boardSize)) return;
     damageCellMutable(draft, nx, ny, 1, pendingDamage, source);
   });
 }
@@ -309,7 +324,7 @@ function damageCellMutable(
 ) {
   const cell = draft.board.grid[y][x];
   if (!cell) return;
-  const stats = getStoneStats(cell.type);
+  const stats = getStoneStats(cell.type, draft.config);
   const nextHp = Math.max(0, (cell.hp as number) - amount);
   cell.hp = nextHp as StoneInstance['hp'];
 
@@ -402,15 +417,16 @@ function applyPendingDamage(
 
 export function findLines(board: BoardState): LineMatch[] {
   const lines: LineMatch[] = [];
-  for (let y = 0; y < board.size; y += 1) {
-    for (let x = 0; x < board.size; x += 1) {
+  const boardSize = board.size;
+  for (let y = 0; y < boardSize; y += 1) {
+    for (let x = 0; x < boardSize; x += 1) {
       const cell = board.grid[y][x];
       if (!cell) continue;
       directions.forEach(({ dx, dy }) => {
         const prevX = x - dx;
         const prevY = y - dy;
         if (
-          inBounds(prevX, prevY) &&
+          inBounds(prevX, prevY, boardSize) &&
           board.grid[prevY][prevX]?.owner === cell.owner
         ) {
           return;
@@ -419,7 +435,7 @@ export function findLines(board: BoardState): LineMatch[] {
         let cx = x;
         let cy = y;
         while (
-          inBounds(cx, cy) &&
+          inBounds(cx, cy, boardSize) &&
           board.grid[cy][cx]?.owner === cell.owner
         ) {
           cells.push({ x: cx, y: cy });
@@ -435,16 +451,22 @@ export function findLines(board: BoardState): LineMatch[] {
   return lines;
 }
 
-export function neighborsCross(x: number, y: number) {
+export function neighborsCross(x: number, y: number, boardSize: number) {
   return crossOffsets
     .map(({ dx, dy }) => ({ x: x + dx, y: y + dy }))
-    .filter(({ x: nx, y: ny }) => inBounds(nx, ny));
+    .filter(({ x: nx, y: ny }) => inBounds(nx, ny, boardSize));
 }
 
-export function neighborsMoore(x: number, y: number) {
+export function neighborsDiagonal(x: number, y: number, boardSize: number) {
+  return diagonalOffsets
+    .map(({ dx, dy }) => ({ x: x + dx, y: y + dy }))
+    .filter(({ x: nx, y: ny }) => inBounds(nx, ny, boardSize));
+}
+
+export function neighborsMoore(x: number, y: number, boardSize: number) {
   return mooreOffsets
     .map(({ dx, dy }) => ({ x: x + dx, y: y + dy }))
-    .filter(({ x: nx, y: ny }) => inBounds(nx, ny));
+    .filter(({ x: nx, y: ny }) => inBounds(nx, ny, boardSize));
 }
 
 /**
@@ -490,7 +512,7 @@ export function applyDamageToCell(
   return { state: next, pendingDamage: buffer };
 }
 
-function inBounds(x: number, y: number) {
-  return x >= 0 && y >= 0 && x < BOARD_SIZE && y < BOARD_SIZE;
+function inBounds(x: number, y: number, boardSize: number) {
+  return x >= 0 && y >= 0 && x < boardSize && y < boardSize;
 }
 

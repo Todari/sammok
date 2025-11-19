@@ -6,48 +6,59 @@ export const STONE_TYPES: StoneType[] = [
   'Tough',
   'Cross',
   'AoE',
+  'Diagonal',
   'Kamikaze',
 ];
 
 export const STONE_STATS: Record<StoneType, StoneStats> = {
-  Basic: { type: 'Basic', maxHp: 2, onPlace: null },
-  Strong: { type: 'Strong', maxHp: 2, onPlace: null },
-  Tough: { type: 'Tough', maxHp: 3, onPlace: null },
-  Cross: { type: 'Cross', maxHp: 2, onPlace: 'Cross' },
-  AoE: { type: 'AoE', maxHp: 2, onPlace: 'AoE' },
-  Kamikaze: { type: 'Kamikaze', maxHp: 2, onPlace: null, onBrokenEnemyHp: 1 },
+  Basic: { type: 'Basic', maxHp: 1, onPlace: null },
+  Strong: { type: 'Strong', maxHp: 1, onPlace: null },
+  Tough: { type: 'Tough', maxHp: 2, onPlace: null },
+  Cross: { type: 'Cross', maxHp: 1, onPlace: 'Cross' },
+  AoE: { type: 'AoE', maxHp: 1, onPlace: 'AoE' },
+  Diagonal: { type: 'Diagonal', maxHp: 1, onPlace: 'Diagonal' },
+  Kamikaze: { type: 'Kamikaze', maxHp: 1, onPlace: null, onBrokenEnemyHp: 1 },
 };
 
 export const DEFAULT_CONFIG: GameConfig = {
-  boardSize: 5,
+  boardSize: 4,
   startingHp: 10,
   handSize: 3,
   bagTotal: 10,
   initialBag: {
     P1: {
-      Strong: 2,
+      Basic: 5,
+      Strong: 1,
       Tough: 1,
-      Cross: 2,
-      AoE: 2,
+      Cross: 1,
+      AoE: 0,
+      Diagonal: 1,
       Kamikaze: 1,
-      Basic: 2,
     },
     AI: {
-      Strong: 2,
+      Basic: 5,
+      Strong: 1,
       Tough: 1,
-      Cross: 2,
-      AoE: 2,
+      Cross: 1,
+      AoE: 0,
+      Diagonal: 1,
       Kamikaze: 1,
-      Basic: 2,
     },
   },
   damage: {
     lineBase: 1,
     strongBonusPerLineStone: 1,
   },
+  stoneStats: STONE_STATS,
 };
 
-export function getStoneStats(type: StoneType): StoneStats {
+export function getStoneStats(
+  type: StoneType,
+  config?: GameConfig,
+): StoneStats {
+  if (config) {
+    return config.stoneStats[type];
+  }
   return STONE_STATS[type];
 }
 

@@ -1,6 +1,10 @@
 import { useMemo } from 'react';
 
-import { neighborsCross, neighborsMoore } from '../core/rules';
+import {
+  neighborsCross,
+  neighborsDiagonal,
+  neighborsMoore,
+} from '../core/rules';
 import type {
   BoardState,
   PlayerId,
@@ -38,20 +42,27 @@ export function Board({
     if (!selectedStone || !hoveredCell) return new Set<string>();
     if (selectedStone === 'Cross') {
       return new Set(
-        neighborsCross(hoveredCell.x, hoveredCell.y).map(
+        neighborsCross(hoveredCell.x, hoveredCell.y, board.size).map(
+          ({ x, y }) => `${x},${y}`,
+        ),
+      );
+    }
+    if (selectedStone === 'Diagonal') {
+      return new Set(
+        neighborsDiagonal(hoveredCell.x, hoveredCell.y, board.size).map(
           ({ x, y }) => `${x},${y}`,
         ),
       );
     }
     if (selectedStone === 'AoE') {
       return new Set(
-        neighborsMoore(hoveredCell.x, hoveredCell.y).map(
+        neighborsMoore(hoveredCell.x, hoveredCell.y, board.size).map(
           ({ x, y }) => `${x},${y}`,
         ),
       );
     }
     return new Set<string>();
-  }, [selectedStone, hoveredCell]);
+  }, [selectedStone, hoveredCell, board.size]);
 
   return (
     <div className="flex flex-col gap-2">
@@ -59,7 +70,10 @@ export function Board({
         보드 · 현재 턴: <span className="font-semibold">{turn}</span>
       </div>
       <div
-        className={`grid h-[480px] w-[480px] grid-cols-5 gap-2 rounded-xl bg-board/80 p-4 shadow-lg`}
+        className={`grid h-[480px] w-[480px] gap-2 rounded-xl bg-board/80 p-4 shadow-lg`}
+        style={{
+          gridTemplateColumns: `repeat(${board.size}, 1fr)`,
+        }}
         role="grid"
         aria-label="Sammok Board"
       >

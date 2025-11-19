@@ -6,13 +6,14 @@ export type StoneType =
   | 'Tough'
   | 'Cross'
   | 'AoE'
+  | 'Diagonal'
   | 'Kamikaze';
 
-export type OnPlaceEffect = 'Cross' | 'AoE' | null;
+export type OnPlaceEffect = 'Cross' | 'AoE' | 'Diagonal' | null;
 
 export interface StoneStats {
   type: StoneType;
-  maxHp: 2 | 3;
+  maxHp: number;
   onPlace?: OnPlaceEffect;
   onBrokenEnemyHp?: number;
 }
@@ -21,8 +22,8 @@ export interface StoneInstance {
   id: string;
   owner: PlayerId;
   type: StoneType;
-  hp: 0 | 1 | 2 | 3;
-  maxHp: 2 | 3;
+  hp: number;
+  maxHp: number;
 }
 
 export type Cell = StoneInstance | null;
@@ -57,12 +58,13 @@ export interface DamageConfig {
 }
 
 export interface GameConfig {
-  boardSize: 5;
+  boardSize: number;
   startingHp: number;
   handSize: number;
   bagTotal: number;
   initialBag: Record<PlayerId, Record<StoneType, number>>;
   damage: DamageConfig;
+  stoneStats: Record<StoneType, StoneStats>;
 }
 
 export type GamePhase = 'Idle' | 'AwaitPlacement' | 'Resolving' | 'GameOver';
