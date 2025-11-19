@@ -19,6 +19,7 @@ const EFFECT_WEIGHTS: Record<StoneType, number> = {
   Cross: 4,
   AoE: 5,
   Diagonal: 4,
+  Persistent: 6,
   Kamikaze: 3,
 };
 

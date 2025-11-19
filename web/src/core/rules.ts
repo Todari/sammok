@@ -118,6 +118,7 @@ function createPlayerBag(
     Cross: 0,
     AoE: 0,
     Diagonal: 0,
+    Persistent: 0,
     Kamikaze: 0,
   };
   STONE_TYPES.forEach((type) => {
@@ -376,6 +377,12 @@ function resolveLines(
       removedSet.add(key);
       const cell = draft.board.grid[y][x];
       if (!cell) return;
+      const stats = getStoneStats(cell.type, draft.config);
+      // persistent 돌은 라인 완성 시에도 제거되지 않음
+      if (stats.persistent) {
+        addLog(draft, `${cell.type} 돌은 라인 완성에도 남아있습니다.`);
+        return;
+      }
       draft.board.grid[y][x] = null;
       returnToBagMutable(draft, cell.owner, [cell.type]);
     });

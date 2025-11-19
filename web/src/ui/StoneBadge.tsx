@@ -34,6 +34,11 @@ const STONE_INFO: Record<
     description: '배치 즉시 대각선 4칸에 피해 1',
     accent: 'bg-purple-500',
   },
+  Persistent: {
+    label: 'Persistent',
+    description: '라인 완성 시에도 제거되지 않음',
+    accent: 'bg-teal-500',
+  },
   Kamikaze: {
     label: 'Kamikaze',
     description: 'HP가 1이 되는 순간 적 HP -1',

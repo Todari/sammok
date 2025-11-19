@@ -7,6 +7,7 @@ export type StoneType =
   | 'Cross'
   | 'AoE'
   | 'Diagonal'
+  | 'Persistent'
   | 'Kamikaze';
 
 export type OnPlaceEffect = 'Cross' | 'AoE' | 'Diagonal' | null;
@@ -16,6 +17,7 @@ export interface StoneStats {
   maxHp: number;
   onPlace?: OnPlaceEffect;
   onBrokenEnemyHp?: number;
+  persistent?: boolean; // 라인 완성 시에도 제거되지 않음
 }
 
 export interface StoneInstance {

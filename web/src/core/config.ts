@@ -7,6 +7,7 @@ export const STONE_TYPES: StoneType[] = [
   'Cross',
   'AoE',
   'Diagonal',
+  'Persistent',
   'Kamikaze',
 ];
 
@@ -17,6 +18,7 @@ export const STONE_STATS: Record<StoneType, StoneStats> = {
   Cross: { type: 'Cross', maxHp: 1, onPlace: 'Cross' },
   AoE: { type: 'AoE', maxHp: 1, onPlace: 'AoE' },
   Diagonal: { type: 'Diagonal', maxHp: 1, onPlace: 'Diagonal' },
+  Persistent: { type: 'Persistent', maxHp: 1, onPlace: null, persistent: true },
   Kamikaze: { type: 'Kamikaze', maxHp: 1, onPlace: null, onBrokenEnemyHp: 1 },
 };
 
@@ -27,21 +29,23 @@ export const DEFAULT_CONFIG: GameConfig = {
   bagTotal: 10,
   initialBag: {
     P1: {
-      Basic: 5,
+      Basic: 4,
       Strong: 1,
       Tough: 1,
       Cross: 1,
       AoE: 0,
       Diagonal: 1,
+      Persistent: 1,
       Kamikaze: 1,
     },
     AI: {
-      Basic: 5,
+      Basic: 4,
       Strong: 1,
       Tough: 1,
       Cross: 1,
       AoE: 0,
       Diagonal: 1,
+      Persistent: 1,
       Kamikaze: 1,
     },
   },
