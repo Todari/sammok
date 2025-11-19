@@ -266,7 +266,7 @@ export function placeStone(
     }
 
     applyPendingDamage(draft, pendingDamage, playerId);
-    if (draft.phase === 'GameOver') return;
+    if ((draft.phase as GamePhase) === 'GameOver') return;
 
     if (player.hand.stones.length === 0) {
       const refill = drawFromBagMutable(
@@ -310,7 +310,6 @@ function damageCellMutable(
   const cell = draft.board.grid[y][x];
   if (!cell) return;
   const stats = getStoneStats(cell.type);
-  const prevHp = cell.hp;
   const nextHp = Math.max(0, (cell.hp as number) - amount);
   cell.hp = nextHp as StoneInstance['hp'];
 

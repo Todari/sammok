@@ -84,7 +84,6 @@ function wouldCompleteLine(
   x: number,
   y: number,
 ): boolean {
-  const size = state.board.size;
   return DIRECTIONS.some(({ dx, dy }) => {
     let count = 1; // include the hypothetical stone
     count += countDirection(state, owner, x, y, dx, dy);

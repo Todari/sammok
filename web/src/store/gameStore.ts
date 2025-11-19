@@ -3,7 +3,7 @@ import { immer } from 'zustand/middleware/immer';
 
 import { defaultBot } from '../ai/bot';
 import { drawHand, initGame, placeStone, canPlace } from '../core/rules';
-import type { GameState, PlayerId } from '../core/types';
+import type { GameState } from '../core/types';
 
 type ThemeMode = 'light' | 'dark';
 
@@ -51,7 +51,7 @@ const createInitialState = (seed?: string): GameStoreState => ({
 });
 
 export const useGameStore = create<GameStoreState>()(
-  immer((set, get) => ({
+  immer((set) => ({
     ...createInitialState('SAMMOK-SEED'),
     init: (seed?: string) =>
       set(() => ({
